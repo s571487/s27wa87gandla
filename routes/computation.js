@@ -1,48 +1,35 @@
 const express = require('express');
 const router = express.Router();
 
-const generateRandomValue = () => Math.floor(Math.random() * 100) + 1;
+function getCircleX(radians, radius) {
+  return Math.cos(radians) * radius;
+}
 
-const applyFunction = (id, x) => {
-    const lastDigit = id % 10;
-    const value = x || generateRandomValue();
+function calcAngle(opposite, hypotenuse) {
+  return Math.asin(opposite / hypotenuse);
+}
 
-    let result;
-    switch (lastDigit) {
-        case 0:
-        case 5:
-            result = Math.cos(value);
-            break;
-        case 1:
-        case 6:
-            result = Math.asin(value);
-            break;
-        case 2:
-        case 7:
-            result = Math.asinh(value);
-            break;
-        default:
-            result = 'Invalid ID';
-    }
+router.get('/', (req, res) => {
+    const x = req.query.x ? parseFloat(req.query.x) : Math.random() * 100; 
+    const radians = Math.random() * Math.PI * 2;
+    const radius = Math.random() * 10 + 1; 
 
-    return result;
-};
+    const opposite = getCircleX(radians, radius);
+    const hypotenuse = radius;
 
-router.get('/computation', (req, res) => {
-    const { id } = req.query;
-    const x = req.query.x ? parseFloat(req.query.x) : null;
+    const y = calcAngle(opposite, hypotenuse);
 
-    if (!id || isNaN(parseFloat(id))) {
-        return res.status(400).json({ error: 'Invalid ID' });
-    }
+    const result = [];
 
-    const result = applyFunction(parseFloat(id), x);
-    const responseString = `[fn] applied to [x] is ${result}`;
-    const functionName = result === 'Invalid ID' ? 'Invalid ID' : result.name;
+    result.push({ name: 'Math.cos', value: Math.cos(radians) });
 
-    const response = responseString.replace('[fn]', functionName).replace('[x]', x ? x.toString() : 'random value');
+    result.push({ name: 'Math.asin', value: Math.asin(y) });
 
-    res.json({ result: response });
+    result.push({ name: 'Math.asinh', value: Math.asinh(x) });
+
+    const response = `${x} radians applied to radius ${radius} is ${y}`;
+
+    res.json({ result: response, functions: result });
 });
 
 module.exports = router;
