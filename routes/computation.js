@@ -51,4 +51,4 @@ app.get('/computation', (req, res) => {
     res.json({ result: response });
 });
 
-module.exports = app;
+module.exports = router;
