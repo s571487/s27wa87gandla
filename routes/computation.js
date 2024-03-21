@@ -1,13 +1,8 @@
 const express = require('express');
-const app = express();
+const router = express.Router();
 
-// Middleware to parse JSON bodies
-app.use(express.json());
-
-// Generate a random value between 1 and 100
 const generateRandomValue = () => Math.floor(Math.random() * 100) + 1;
 
-// Function to apply based on the last digit of the ID
 const applyFunction = (id, x) => {
     const lastDigit = id % 10;
     const value = x || generateRandomValue();
@@ -33,8 +28,7 @@ const applyFunction = (id, x) => {
     return result;
 };
 
-// Endpoint for computation
-app.get('/computation', (req, res) => {
+router.get('/computation', (req, res) => {
     const { id } = req.query;
     const x = req.query.x ? parseFloat(req.query.x) : null;
 
@@ -44,7 +38,7 @@ app.get('/computation', (req, res) => {
 
     const result = applyFunction(parseFloat(id), x);
     const responseString = `[fn] applied to [x] is ${result}`;
-    const functionName = result === 'Invalid ID' ? 'Invalid ID' : result.name; // Get function name for the response
+    const functionName = result === 'Invalid ID' ? 'Invalid ID' : result.name;
 
     const response = responseString.replace('[fn]', functionName).replace('[x]', x ? x.toString() : 'random value');
 
