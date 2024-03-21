@@ -1,12 +1,13 @@
 const express = require('express');
-const { v4: uuidv4 } = require('uuid');
 const app = express();
-const port = 3000;
 
+// Middleware to parse JSON bodies
 app.use(express.json());
 
+// Generate a random value between 1 and 100
 const generateRandomValue = () => Math.floor(Math.random() * 100) + 1;
 
+// Function to apply based on the last digit of the ID
 const applyFunction = (id, x) => {
     const lastDigit = id % 10;
     const value = x || generateRandomValue();
@@ -43,13 +44,11 @@ app.get('/computation', (req, res) => {
 
     const result = applyFunction(parseFloat(id), x);
     const responseString = `[fn] applied to [x] is ${result}`;
-    const functionName = result === 'Invalid ID' ? 'Invalid ID' : result.name;
+    const functionName = result === 'Invalid ID' ? 'Invalid ID' : result.name; // Get function name for the response
 
     const response = responseString.replace('[fn]', functionName).replace('[x]', x ? x.toString() : 'random value');
 
     res.json({ result: response });
 });
 
-app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
-});
+module.exports = app;
